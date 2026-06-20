@@ -22,7 +22,7 @@
             <input type="text" id="searchInput" placeholder="Search cards..." aria-label="Search notes" />
             
             <div class="card-container" id="card-container"></div>
-            
+
             <div class="editor hidden" id="editor" role="dialog" aria-modal="true">
                 <div class="editor-header">
                     <h2 id="editor-title" contenteditable="true" aria-label="Note title"></h2>
@@ -30,6 +30,23 @@
                 </div>
                 
                 <div class="editor-divider"></div>
+
+                <div class="ai-toolbar">
+                    <input 
+                        type="text" 
+                        id="ai-prompt-input" 
+                        class="ai-input" 
+                        list="ai-suggestions" 
+                        placeholder="Tell the AI what to do... (e.g., 'Summarize in 3 bullet points')" 
+                    />
+                    <datalist id="ai-suggestions">
+                        <option value="Format as bullet points">
+                        <option value="Extract key concepts">
+                        <option value="Add practical examples">
+                        <option value="Summarize content">
+                    </datalist>
+                    <button id="ai-generate-btn" class="ai-btn">✨ Magic Edit</button>
+                </div>
                 
                 <textarea id="editor-content" placeholder="Enter details here..." aria-label="Note content"></textarea>
             </div>
@@ -37,7 +54,7 @@
     </div>
 
     <footer>
-        Licensed under MIT License
+        <p>&copy; 2026 Nilesh217. All Rights Reserved.</p>
     </footer>
     
     <script src="script.js"></script>
