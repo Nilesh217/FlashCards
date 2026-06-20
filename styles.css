@@ -1,0 +1,133 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* General */
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+header {
+    background-color: #d62828;
+    color: white;
+    text-align: center;
+    padding: 1.25rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/* Main Layout */
+.container {
+    display: flex;
+    flex: 1;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 5rem;
+    background-color: #81864A;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 1.5rem;
+}
+
+/* Plus Circle */
+.plus-circle {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: 0.0625rem solid rgba(255, 255, 255, 0.35);
+    color: #2d6a4f;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.plus-circle:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: scale(1.1);
+}
+
+/* Hero Section */
+.hero {
+    flex: 1;
+    background-color: #00b4d8;
+    color: white;
+    padding: 1rem 1rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 0.75rem;
+}
+
+/* Cards Container */
+.card-container {
+    width: 100%;
+
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(min(18rem, 100%), 1fr)
+    );
+
+    gap: 1.25rem;
+    margin-top: 0.25rem;
+}
+
+/* Individual Card */
+.card {
+    min-height: 10rem;
+
+    background: white;
+    color: #333;
+
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+
+    box-shadow:
+        0 0.25rem 0.75rem rgba(0, 0, 0, 0.12);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1.1rem;
+    font-weight: 600;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-0.25rem);
+    box-shadow:
+        0 0.5rem 1rem rgba(0, 0, 0, 0.18);
+}
+
+/* Footer */
+footer {
+    background-color: #f8f9fa;
+    color: #555;
+    text-align: center;
+    padding: 1rem;
+    border-top: 0.0625rem solid #e5e5e5;
+    font-size: 0.9rem;
+}
