@@ -10,7 +10,7 @@
 
     <!-- Header -->
     <header>
-        Website Header
+        Zettelkasten Notes
     </header>
 
     <!-- Main Content -->
@@ -24,9 +24,25 @@
         <!-- Hero Section -->
         <section class="hero">
             <h1>Welcome</h1>
-        
+
+            <input type="text" id="searchInput" placeholder="Search cards..." />
+
             <div class="card-container"></div>
             
+            <div class="editor hidden">
+                <div class="editor-header">
+                    <h2 id="editor-title"></h2>
+                    <button id="close-editor">✕</button>
+                </div>
+            
+                <div class="editor-divider"></div>
+            
+                <textarea
+                    id="editor-content"
+                    placeholder="Enter details here..."
+                ></textarea>
+            </div>
+
         </section>
 
     </div>
