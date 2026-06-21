@@ -34,18 +34,28 @@
                 <div class="ai-toolbar">
                     <input 
                         type="text" 
-                        id="ai-prompt-input" 
-                        class="ai-input" 
-                        list="ai-suggestions" 
-                        placeholder="Tell the AI what to do... (e.g., 'Summarize in 3 bullet points')" 
+                        id="ai-prompt-input"
+                        class="ai-input"
+                        list="ai-suggestions"
+                        placeholder="Try: study notes, flashcards, keywords, summary..."
                     />
+                
                     <datalist id="ai-suggestions">
-                        <option value="Format as bullet points">
-                        <option value="Extract key concepts">
-                        <option value="Add practical examples">
-                        <option value="Summarize content">
+                        <option value="study notes">
+                        <option value="summary">
+                        <option value="keywords">
+                        <option value="flashcards">
+                        <option value="bullet points">
+                        <option value="exam preparation">
+                        <option value="extract key concepts">
+                        <option value="important points only">
+                        <option value="format for revision">
+                        <option value="add practical examples">
                     </datalist>
-                    <button id="ai-generate-btn" class="ai-btn">✨ Magic Edit</button>
+                
+                    <button id="ai-generate-btn" class="ai-btn">
+                        ✨ Magic Edit
+                    </button>
                 </div>
                 
                 <textarea id="editor-content" placeholder="Enter details here..." aria-label="Note content"></textarea>

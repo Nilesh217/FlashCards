@@ -205,7 +205,7 @@ DOM.aiBtn.addEventListener('click', async () => {
     if (!activeCardId) return;
 
     const currentText = DOM.editorContent.value;
-    const customInstruction = DOM.aiInput.value.trim() || "Improve formatting and clarity";
+    const customInstruction = DOM.aiInput.value.trim() || "study notes";
 
     // UI Loading State
     DOM.aiBtn.disabled = true;
@@ -233,20 +233,241 @@ DOM.aiBtn.addEventListener('click', async () => {
 
 // Mock AI Fetch (Replace with real backend call)
 async function fetchAIModification(text, instruction) {
+
     return new Promise((resolve) => {
+
         setTimeout(() => {
+
             if (!text.trim()) {
-                resolve("Please write some notes first before using the AI!");
+                resolve("Please enter some notes first.");
+                return;
+            }
+
+            const cmd = instruction.toLowerCase();
+
+            if (cmd.includes("summary")) {
+                resolve(generateSummary(text));
+                return;
+            }
+
+            if (cmd.includes("keyword")) {
+                resolve(generateKeywords(text));
+                return;
+            }
+
+            if (cmd.includes("flash")) {
+                resolve(generateFlashcards(text));
+                return;
+            }
+
+            if (cmd.includes("bullet")) {
+                resolve(generateBulletNotes(text));
+                return;
+            }
+
+            if (cmd.includes("concept")) {
+                resolve(generateKeyConcepts(text));
                 return;
             }
             
-            // In a real app, send both `text` and `instruction` to your backend prompt.
-            // Example backend prompt: `User Instruction: ${instruction}\n\nApply this to the following text:\n${text}`
-            
-            resolve(`**[AI applied: "${instruction}"]**\n\n${text}\n\n*Note: Connect a real API to process custom text instructions!*`);
-        }, 1500);
+            if (cmd.includes("example")) {
+                resolve(generateExamples(text));
+                return;
+            }
+
+            if (
+                cmd.includes("study") ||
+                cmd.includes("exam") ||
+                cmd.includes("notes")
+            ) {
+                resolve(generateStudyNotes(text));
+                return;
+            }
+
+            resolve(generateStudyNotes(text));
+
+        }, 500);
+
     });
+
 }
+
+function generateSummary(text) {
+
+    const sentences = text
+        .split(/[.!?]+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    return (
+`SUMMARY
+
+${sentences.slice(0, 3).join(". ")}.`
+    );
+}
+
+function generateKeywords(text) {
+
+    const stopWords = [
+        "the","is","are","was","were",
+        "and","or","for","with",
+        "from","that","this","have",
+        "has","had","into","about",
+        "they","their","them","which",
+        "what","when","where"
+    ];
+
+    const words =
+        text.toLowerCase().match(/\b[a-z]{4,}\b/g) || [];
+
+    const keywords =
+        [...new Set(
+            words.filter(
+                word => !stopWords.includes(word)
+            )
+        )].slice(0, 15);
+
+    return (
+`KEYWORDS
+
+• ${keywords.join("\n• ")}`
+    );
+}
+
+function generateBulletNotes(text) {
+
+    const sentences = text
+        .split(/[.!?]+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    return (
+`KEY POINTS
+
+${sentences.map(s => "• " + s).join("\n")}`
+    );
+}
+
+function generateFlashcards(text) {
+
+    const sentences = text
+        .split(/[.!?]+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    const cards = [];
+
+    sentences.forEach(sentence => {
+
+        if (sentence.includes(" is ")) {
+
+            const parts = sentence.split(" is ");
+
+            if (
+                parts[0].trim().length > 2 &&
+                parts[1].trim().length > 5
+            ) {
+
+                cards.push(
+                    `Q: What is ${parts[0].trim()}?\nA: ${parts[1].trim()}`
+                );
+
+            }
+        }
+
+        if (sentence.includes(":")) {
+
+            const parts = sentence.split(":");
+        
+            cards.push(
+                `Q: Explain ${parts[0].trim()}.\nA: ${parts[1].trim()}`
+            );
+        
+        }
+
+    });
+
+    if (!cards.length) {
+
+        cards.push(
+            "No flashcards could be generated from the text."
+        );
+
+    }
+
+    return (
+`FLASHCARDS
+
+${cards.join("\n\n")}`
+    );
+}
+
+function generateStudyNotes(text) {
+
+    return `
+========================
+STUDY NOTES
+========================
+
+${generateSummary(text)}
+
+========================
+
+${generateKeywords(text)}
+
+========================
+
+${generateBulletNotes(text)}
+
+========================
+
+${generateFlashcards(text)}
+`;
+}
+
+function generateKeyConcepts(text) {
+
+    const sentences = text
+        .split(/[.!?]+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    return `
+KEY CONCEPTS
+
+${sentences
+    .slice(0, 8)
+    .map(s => "• " + s)
+    .join("\n")}
+`;
+
+}
+
+function generateExamples(text) {
+
+    const words =
+        text.toLowerCase().match(/\b[a-z]{4,}\b/g) || [];
+
+    const keywords =
+        [...new Set(words)].slice(0, 5);
+
+    let output = "PRACTICAL EXAMPLES\n\n";
+
+    keywords.forEach(keyword => {
+
+        output +=
+`• ${keyword}
+Example: Real-world use of ${keyword}
+
+`;
+
+    });
+
+    return output;
+
+}
+
+
 
 // Start Application
 init();
