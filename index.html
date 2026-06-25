@@ -63,9 +63,14 @@
                     <button class="format-btn" data-command="bold" title="Bold"><b>B</b></button>
                     <button class="format-btn" data-command="italic" title="Italic"><i>I</i></button>
                     <button class="format-btn" data-command="underline" title="Underline"><u>U</u></button>
+                    
                     <div class="divider"></div>
-                    <button class="format-btn" data-command="hiliteColor" data-value="yellow" title="Highlight">🖍️</button>
-                    <input type="color" id="text-color-picker" class="color-picker" title="Text Color">
+                    
+                    <span title="Highlight Color">🖍️</span>
+                    <input type="color" id="highlight-color-picker" class="color-picker" value="#ffff00">
+                    
+                    <span title="Text Color" style="margin-left: 0.5rem;">A</span>
+                    <input type="color" id="text-color-picker" class="color-picker" value="#000000">
                 </div>
                 
                 <div id="editor-content" class="rich-text-editor" contenteditable="true" aria-label="Note content"></div>

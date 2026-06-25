@@ -23,7 +23,8 @@ const DOM = {
 
     // Rich Text Format Elements
     formatBtns: document.querySelectorAll('.format-btn'),
-    colorPicker: document.getElementById('text-color-picker')
+    colorPicker: document.getElementById('text-color-picker'),
+    highlightPicker: document.getElementById('highlight-color-picker')
 };
 
 // ======================================
@@ -221,6 +222,14 @@ DOM.formatBtns.forEach(btn => {
 
 DOM.colorPicker.addEventListener('input', (e) => {
     document.execCommand('foreColor', false, e.target.value);
+
+// Handle Custom Highlight (Background) Color
+DOM.highlightPicker.addEventListener('input', (e) => {
+    // Note: 'backColor' is the standard execCommand for text background highlighting
+    document.execCommand('backColor', false, e.target.value);
+    // Manually trigger the input event to auto-save the changes
+    DOM.editorContent.dispatchEvent(new Event('input'));
+});
     DOM.editorContent.dispatchEvent(new Event('input'));
 });
 
