@@ -19,7 +19,11 @@ const DOM = {
     
     // AI Elements
     aiInput: document.getElementById('ai-prompt-input'),
-    aiBtn: document.getElementById('ai-generate-btn')
+    aiBtn: document.getElementById('ai-generate-btn'),
+
+    // Rich Text Format Elements
+    formatBtns: document.querySelectorAll('.format-btn'),
+    colorPicker: document.getElementById('text-color-picker')
 };
 
 // ======================================
@@ -72,8 +76,9 @@ function openEditor(id) {
     
     activeCardId = id;
     DOM.editorTitle.textContent = card.title;
-    DOM.editorContent.value = card.details;
-    DOM.aiInput.value = ''; // Reset AI prompt on open
+    // Load formatting using innerHTML
+    DOM.editorContent.innerHTML = card.details; 
+    DOM.aiInput.value = ''; 
     DOM.editor.classList.remove('hidden');
     
     setTimeout(() => DOM.editorContent.focus(), 50);
@@ -84,10 +89,10 @@ function closeEditor() {
     activeCardId = null;
 }
 
-// Auto-Save Content
+// Auto-Save Content (Using innerHTML to capture bold, italics, etc.)
 DOM.editorContent.addEventListener('input', (e) => {
     if (!activeCardId) return;
-    cards.find(c => c.id === activeCardId).details = e.target.value;
+    cards.find(c => c.id === activeCardId).details = e.target.innerHTML;
     saveCards();
 });
 
@@ -155,7 +160,7 @@ DOM.searchInput.addEventListener('input', (e) => {
 DOM.plusBtn.addEventListener('click', createCard);
 DOM.closeEditorBtn.addEventListener('click', closeEditor);
 
-// Drag and Drop (Preserved from original)
+// Drag and Drop
 DOM.container.addEventListener('dragstart', (e) => {
     if (!e.target.classList.contains('card')) return;
     draggedCardId = e.target.dataset.id;
@@ -199,27 +204,51 @@ function getDragAfterElement(container, y) {
 }
 
 // ======================================
+// RICH TEXT FORMATTING LOGIC
+// ======================================
+DOM.formatBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault(); // Prevent button from stealing focus
+        const command = btn.dataset.command;
+        const value = btn.dataset.value || null;
+        
+        document.execCommand(command, false, value);
+        
+        // Manually trigger input event to auto-save formatting
+        DOM.editorContent.dispatchEvent(new Event('input'));
+    });
+});
+
+DOM.colorPicker.addEventListener('input', (e) => {
+    document.execCommand('foreColor', false, e.target.value);
+    DOM.editorContent.dispatchEvent(new Event('input'));
+});
+
+
+// ======================================
 // AI INTEGRATION API
 // ======================================
 DOM.aiBtn.addEventListener('click', async () => {
     if (!activeCardId) return;
 
-    const currentText = DOM.editorContent.value;
+    // Send pure text to the AI without HTML tags getting in the way
+    const currentText = DOM.editorContent.innerText;
     const customInstruction = DOM.aiInput.value.trim() || "study notes";
 
-    // UI Loading State
     DOM.aiBtn.disabled = true;
     DOM.aiBtn.textContent = '⏳ Processing...';
-    DOM.editorContent.disabled = true;
+    // Make contenteditable block look disabled
+    DOM.editorContent.contentEditable = false; 
+    DOM.editorContent.style.opacity = '0.6';
 
     try {
         const newText = await fetchAIModification(currentText, customInstruction);
         
-        // Update UI
-        DOM.editorContent.value = newText;
+        // We set innerText so the line breaks format cleanly
+        DOM.editorContent.innerText = newText;
         
-        // Sync State
-        cards.find(c => c.id === activeCardId).details = newText;
+        // Sync State (Convert back to innerHTML for future edits)
+        cards.find(c => c.id === activeCardId).details = DOM.editorContent.innerHTML;
         saveCards();
     } catch (error) {
         console.error("AI Generation Failed:", error);
@@ -227,17 +256,15 @@ DOM.aiBtn.addEventListener('click', async () => {
     } finally {
         DOM.aiBtn.disabled = false;
         DOM.aiBtn.textContent = '✨ Magic Edit';
-        DOM.editorContent.disabled = false;
+        DOM.editorContent.contentEditable = true;
+        DOM.editorContent.style.opacity = '1';
     }
 });
 
-// Mock AI Fetch (Replace with real backend call)
+// Mock AI Fetch
 async function fetchAIModification(text, instruction) {
-
     return new Promise((resolve) => {
-
         setTimeout(() => {
-
             if (!text.trim()) {
                 resolve("Please enter some notes first.");
                 return;
@@ -245,229 +272,75 @@ async function fetchAIModification(text, instruction) {
 
             const cmd = instruction.toLowerCase();
 
-            if (cmd.includes("summary")) {
-                resolve(generateSummary(text));
-                return;
-            }
-
-            if (cmd.includes("keyword")) {
-                resolve(generateKeywords(text));
-                return;
-            }
-
-            if (cmd.includes("flash")) {
-                resolve(generateFlashcards(text));
-                return;
-            }
-
-            if (cmd.includes("bullet")) {
-                resolve(generateBulletNotes(text));
-                return;
-            }
-
-            if (cmd.includes("concept")) {
-                resolve(generateKeyConcepts(text));
-                return;
-            }
-            
-            if (cmd.includes("example")) {
-                resolve(generateExamples(text));
-                return;
-            }
-
-            if (
-                cmd.includes("study") ||
-                cmd.includes("exam") ||
-                cmd.includes("notes")
-            ) {
-                resolve(generateStudyNotes(text));
-                return;
+            if (cmd.includes("summary")) { resolve(generateSummary(text)); return; }
+            if (cmd.includes("keyword")) { resolve(generateKeywords(text)); return; }
+            if (cmd.includes("flash")) { resolve(generateFlashcards(text)); return; }
+            if (cmd.includes("bullet")) { resolve(generateBulletNotes(text)); return; }
+            if (cmd.includes("concept")) { resolve(generateKeyConcepts(text)); return; }
+            if (cmd.includes("example")) { resolve(generateExamples(text)); return; }
+            if (cmd.includes("study") || cmd.includes("exam") || cmd.includes("notes")) {
+                resolve(generateStudyNotes(text)); return;
             }
 
             resolve(generateStudyNotes(text));
-
         }, 500);
-
     });
-
 }
 
 function generateSummary(text) {
-
-    const sentences = text
-        .split(/[.!?]+/)
-        .map(s => s.trim())
-        .filter(Boolean);
-
-    return (
-`SUMMARY
-
-${sentences.slice(0, 3).join(". ")}.`
-    );
+    const sentences = text.split(/[.!?]+/).map(s => s.trim()).filter(Boolean);
+    return `SUMMARY\n\n${sentences.slice(0, 3).join(". ")}.`;
 }
 
 function generateKeywords(text) {
-
-    const stopWords = [
-        "the","is","are","was","were",
-        "and","or","for","with",
-        "from","that","this","have",
-        "has","had","into","about",
-        "they","their","them","which",
-        "what","when","where"
-    ];
-
-    const words =
-        text.toLowerCase().match(/\b[a-z]{4,}\b/g) || [];
-
-    const keywords =
-        [...new Set(
-            words.filter(
-                word => !stopWords.includes(word)
-            )
-        )].slice(0, 15);
-
-    return (
-`KEYWORDS
-
-• ${keywords.join("\n• ")}`
-    );
+    const stopWords = ["the","is","are","was","were","and","or","for","with","from","that","this","have","has","had","into","about","they","their","them","which","what","when","where"];
+    const words = text.toLowerCase().match(/\b[a-z]{4,}\b/g) || [];
+    const keywords = [...new Set(words.filter(word => !stopWords.includes(word)))].slice(0, 15);
+    return `KEYWORDS\n\n• ${keywords.join("\n• ")}`;
 }
 
 function generateBulletNotes(text) {
-
-    const sentences = text
-        .split(/[.!?]+/)
-        .map(s => s.trim())
-        .filter(Boolean);
-
-    return (
-`KEY POINTS
-
-${sentences.map(s => "• " + s).join("\n")}`
-    );
+    const sentences = text.split(/[.!?]+/).map(s => s.trim()).filter(Boolean);
+    return `KEY POINTS\n\n${sentences.map(s => "• " + s).join("\n")}`;
 }
 
 function generateFlashcards(text) {
-
-    const sentences = text
-        .split(/[.!?]+/)
-        .map(s => s.trim())
-        .filter(Boolean);
-
+    const sentences = text.split(/[.!?]+/).map(s => s.trim()).filter(Boolean);
     const cards = [];
-
     sentences.forEach(sentence => {
-
         if (sentence.includes(" is ")) {
-
             const parts = sentence.split(" is ");
-
-            if (
-                parts[0].trim().length > 2 &&
-                parts[1].trim().length > 5
-            ) {
-
-                cards.push(
-                    `Q: What is ${parts[0].trim()}?\nA: ${parts[1].trim()}`
-                );
-
+            if (parts[0].trim().length > 2 && parts[1].trim().length > 5) {
+                cards.push(`Q: What is ${parts[0].trim()}?\nA: ${parts[1].trim()}`);
             }
         }
-
         if (sentence.includes(":")) {
-
             const parts = sentence.split(":");
-        
-            cards.push(
-                `Q: Explain ${parts[0].trim()}.\nA: ${parts[1].trim()}`
-            );
-        
+            cards.push(`Q: Explain ${parts[0].trim()}.\nA: ${parts[1].trim()}`);
         }
-
     });
-
-    if (!cards.length) {
-
-        cards.push(
-            "No flashcards could be generated from the text."
-        );
-
-    }
-
-    return (
-`FLASHCARDS
-
-${cards.join("\n\n")}`
-    );
+    if (!cards.length) cards.push("No flashcards could be generated from the text.");
+    return `FLASHCARDS\n\n${cards.join("\n\n")}`;
 }
 
 function generateStudyNotes(text) {
-
-    return `
-========================
-STUDY NOTES
-========================
-
-${generateSummary(text)}
-
-========================
-
-${generateKeywords(text)}
-
-========================
-
-${generateBulletNotes(text)}
-
-========================
-
-${generateFlashcards(text)}
-`;
+    return `========================\nSTUDY NOTES\n========================\n\n${generateSummary(text)}\n\n========================\n\n${generateKeywords(text)}\n\n========================\n\n${generateBulletNotes(text)}\n\n========================\n\n${generateFlashcards(text)}\n`;
 }
 
 function generateKeyConcepts(text) {
-
-    const sentences = text
-        .split(/[.!?]+/)
-        .map(s => s.trim())
-        .filter(Boolean);
-
-    return `
-KEY CONCEPTS
-
-${sentences
-    .slice(0, 8)
-    .map(s => "• " + s)
-    .join("\n")}
-`;
-
+    const sentences = text.split(/[.!?]+/).map(s => s.trim()).filter(Boolean);
+    return `KEY CONCEPTS\n\n${sentences.slice(0, 8).map(s => "• " + s).join("\n")}\n`;
 }
 
 function generateExamples(text) {
-
-    const words =
-        text.toLowerCase().match(/\b[a-z]{4,}\b/g) || [];
-
-    const keywords =
-        [...new Set(words)].slice(0, 5);
-
+    const words = text.toLowerCase().match(/\b[a-z]{4,}\b/g) || [];
+    const keywords = [...new Set(words)].slice(0, 5);
     let output = "PRACTICAL EXAMPLES\n\n";
-
     keywords.forEach(keyword => {
-
-        output +=
-`• ${keyword}
-Example: Real-world use of ${keyword}
-
-`;
-
+        output += `• ${keyword}\nExample: Real-world use of ${keyword}\n\n`;
     });
-
     return output;
-
 }
-
-
 
 // Start Application
 init();

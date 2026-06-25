@@ -73,9 +73,9 @@ header {
 /* =========================================
    SELF-CONTAINED CARD STYLES
    ========================================= */
-   .card-container {
+.card-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Back to 250px */
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1.5rem;
     width: 100%;
     align-items: start;
@@ -85,20 +85,18 @@ header {
     background: var(--text-light);
     border-radius: 1rem;
     padding: 1.5rem;
-    min-height: 150px; /* Shrunk back from 350px */
+    min-height: 150px;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    position: relative; /* Crucial for absolute positioning the action buttons */
+    position: relative;
     box-shadow: var(--shadow-sm);
     transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-    cursor: pointer; /* Bring back the pointer so it feels clickable */
+    cursor: pointer;
 }
 
 .card:hover { box-shadow: var(--shadow-md); }
 .card.dragging { opacity: 0.5; }
-
-/* Header: Title and Delete Button */
 
 .card-title-input {
     flex: 1;
@@ -114,7 +112,6 @@ header {
 
 .card-title-input:focus { border-bottom-color: var(--primary-color); }
 
-/* Card Action Buttons */
 .card-actions {
     position: absolute; 
     top: 1rem; 
@@ -145,7 +142,7 @@ header {
 /* =========================================
    FULL SCREEN EDITOR
    ========================================= */
-   .editor {
+.editor {
     position: fixed;
     top: 0;
     left: 0;
@@ -227,9 +224,7 @@ header {
     transition: border-color var(--transition-speed);
 }
 
-.ai-input:focus {
-    border-color: var(--primary-color);
-}
+.ai-input:focus { border-color: var(--primary-color); }
 
 .ai-btn {
     padding: 0.75rem 1.5rem;
@@ -248,19 +243,69 @@ header {
 .ai-btn:active { transform: scale(0.95); }
 .ai-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
 
-#editor-content {
+/* =========================================
+   RICH TEXT FORMATTING TOOLBAR
+   ========================================= */
+.format-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem 2rem;
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+    align-items: center;
+}
+
+.format-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    padding: 0.4rem 0.6rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.format-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #ddd;
+}
+
+.format-toolbar .divider {
+    width: 1px;
+    height: 1.5rem;
+    background-color: #ccc;
+    margin: 0 0.5rem;
+}
+
+.color-picker {
+    border: none;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+}
+
+/* =========================================
+   RICH TEXT EDITOR AREA
+   ========================================= */
+.rich-text-editor {
     flex: 1;
     padding: 2rem;
     border: none;
     outline: none;
     font-size: 1.1rem;
     line-height: 1.6;
-    resize: none;
+    overflow-y: auto;
+    background: var(--text-light);
+    white-space: pre-wrap; /* Preserves line breaks */
 }
 
-/* In-Card Text Area */
-
-.card-content:focus { border-color: var(--primary-color); }
+.rich-text-editor:empty:before {
+    content: "Enter details here...";
+    color: #999;
+    pointer-events: none;
+}
 
 footer {
     background: var(--bg-light); color: #555; text-align: center; padding: 1rem;

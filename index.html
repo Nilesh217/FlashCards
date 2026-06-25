@@ -58,8 +58,17 @@
                         ✨ Magic Edit
                     </button>
                 </div>
+
+                <div class="format-toolbar">
+                    <button class="format-btn" data-command="bold" title="Bold"><b>B</b></button>
+                    <button class="format-btn" data-command="italic" title="Italic"><i>I</i></button>
+                    <button class="format-btn" data-command="underline" title="Underline"><u>U</u></button>
+                    <div class="divider"></div>
+                    <button class="format-btn" data-command="hiliteColor" data-value="yellow" title="Highlight">🖍️</button>
+                    <input type="color" id="text-color-picker" class="color-picker" title="Text Color">
+                </div>
                 
-                <textarea id="editor-content" placeholder="Enter details here..." aria-label="Note content"></textarea>
+                <div id="editor-content" class="rich-text-editor" contenteditable="true" aria-label="Note content"></div>
             </div>
         </section>
     </div>
